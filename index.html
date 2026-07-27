@@ -2,25 +2,34 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mamada">
+<meta name="theme-color" content="#f5576c">
+<link rel="manifest" href="manifest.json">
 <title>🍼 Mamada Tracker</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; color: #333; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; color: #333; overflow-x: hidden; }
 
 /* Header */
-.header { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 16px; text-align: center; color: white; position: sticky; top: 0; z-index: 100; }
+.header { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 16px; text-align: center; color: white; position: sticky; top: 0; z-index: 100; }
 .header h1 { font-size: 1.4rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.header .baby-name { font-weight: 300; opacity: 0.9; }
+.header .baby-name { font-weight: 300; opacity: 0.9; margin-top: 2px; }
 
 /* Loading overlay */
-.loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white; }
+.loading-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white; }
 .loading-overlay .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Install prompt */
+.install-banner { display: none; background: rgba(255,255,255,0.25); color: white; padding: 10px 16px; text-align: center; font-size: 0.85rem; cursor: pointer; }
+.install-banner.show { display: block; }
+
 /* Main button area */
-.start-section { padding: 20px; text-align: center; }
-.big-btn { width: 200px; height: 200px; border-radius: 50%; border: none; font-size: 1.3rem; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin: 20px auto; }
+.start-section { padding: 10px 20px 20px; text-align: center; }
+.big-btn { width: 200px; height: 200px; border-radius: 50%; border: none; font-size: 1.3rem; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin: 10px auto; }
 .big-btn.start { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 .big-btn.active { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); animation: pulse 2s infinite; }
 .big-btn:active { transform: scale(0.95); }
@@ -29,22 +38,22 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
 /* Side selector */
-.side-selector { display: flex; gap: 12px; justify-content: center; margin: 16px 0; }
-.side-btn { padding: 12px 28px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); }
+.side-selector { display: flex; gap: 12px; justify-content: center; margin: 12px 0; }
+.side-btn { padding: 12px 28px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
 .side-btn.active { background: white; color: #f5576c; border-color: white; }
 .side-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Stats cards */
 .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 16px; }
-.stat-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px 8px; text-align: center; color: white; }
+.stat-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 16px 8px; text-align: center; color: white; }
 .stat-card .stat-value { font-size: 1.5rem; font-weight: 700; }
 .stat-card .stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; }
 
 /* History */
-.history-section { padding: 16px; padding-bottom: 40px; }
+.history-section { padding: 16px; padding-bottom: 60px; }
 .history-title { color: white; font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
 .clear-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
-.history-list { max-height: 400px; overflow-y: auto; }
+.history-list { max-height: 500px; overflow-y: auto; }
 .history-item { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .history-item .info { display: flex; align-items: center; gap: 12px; }
 .history-item .side-icon { font-size: 1.8rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f0f0f0; }
@@ -57,16 +66,13 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
 
 /* Settings */
 .settings-row { display: flex; gap: 10px; padding: 0 16px 16px; justify-content: center; }
-.name-input { flex: 1; max-width: 200px; padding: 10px 16px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1rem; text-align: center; backdrop-filter: blur(5px); }
+.name-input { flex: 1; max-width: 200px; padding: 10px 16px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1rem; text-align: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
 .name-input::placeholder { color: rgba(255,255,255,0.6); }
 .name-input:focus { outline: none; border-color: white; background: rgba(255,255,255,0.25); }
 
 /* Toast */
 .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; transition: transform 0.3s ease; z-index: 200; }
 .toast.show { transform: translateX(-50%) translateY(0); }
-
-/* Cloud badge */
-.cloud-badge { position: fixed; bottom: 10px; right: 10px; font-size: 0.7rem; color: rgba(255,255,255,0.5); }
 </style>
 </head>
 <body>
@@ -74,12 +80,17 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
 <!-- Loading overlay -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
-  <div>Carregando dados...</div>
+  <div>Carregando...</div>
 </div>
 
 <div class="header">
   <h1>🍼 Mamada Tracker</h1>
   <div class="baby-name" id="babyNameDisplay">Carregando...</div>
+</div>
+
+<!-- Install prompt -->
+<div class="install-banner" id="installBanner" onclick="installApp()">
+  📲 Toque aqui para instalar o app no celular
 </div>
 
 <!-- Baby name input -->
@@ -129,23 +140,70 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
   </div>
 </div>
 
-<div class="cloud-badge">☁️ Sincronizado</div>
 <div class="toast" id="toast"></div>
 
 <script>
 // ============================================
-// SESSION ID — unique per device, persisted
+// INDEXEDDB — Banco de dados local persistente
+// Diferente do localStorage, IndexedDB NÃO é limpo
+// em navegadores in-app (WhatsApp, Instagram, etc)
 // ============================================
-function getSessionId() {
-  let sid = localStorage.getItem('mt_session_id');
-  if (!sid) {
-    sid = 'mt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('mt_session_id', sid);
-  }
-  return sid;
+const DB_NAME = 'MamadaTrackerDB';
+const DB_VERSION = 1;
+let db = null;
+
+function openDB() {
+  return new Promise(function(resolve, reject) {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = function() { reject(req.error); };
+    req.onsuccess = function() { resolve(req.result); };
+    req.onupgradeneeded = function(e) {
+      const database = e.target.result;
+      if (!database.objectStoreNames.contains('feeds')) {
+        database.createObjectStore('feeds', { keyPath: 'id' });
+      }
+      if (!database.objectStoreNames.contains('settings')) {
+        database.createObjectStore('settings', { keyPath: 'key' });
+      }
+    };
+  });
 }
-const SESSION_ID = getSessionId();
-const API_BASE = ''; // same domain
+
+function dbGetAll(store) {
+  return new Promise(function(resolve, reject) {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = function() { resolve(req.result); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+
+function dbPut(store, obj) {
+  return new Promise(function(resolve, reject) {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(obj);
+    tx.oncomplete = function() { resolve(true); };
+    tx.onerror = function() { reject(tx.error); };
+  });
+}
+
+function dbDelete(store, key) {
+  return new Promise(function(resolve, reject) {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(key);
+    tx.oncomplete = function() { resolve(true); };
+    tx.onerror = function() { reject(tx.error); };
+  });
+}
+
+function dbClear(store) {
+  return new Promise(function(resolve, reject) {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).clear();
+    tx.oncomplete = function() { resolve(true); };
+    tx.onerror = function() { reject(tx.error); };
+  });
+}
 
 // ============================================
 // STATE
@@ -156,97 +214,87 @@ let feedTimer = null;
 let currentSide = 'left';
 let history = [];
 let babyName = '';
+let deferredPrompt = null;
 
 // ============================================
-// API FUNCTIONS — cloud database
+// PWA INSTALL PROMPT
 // ============================================
-async function apiLoad() {
-  try {
-    const resp = await fetch(`${API_BASE}/api/load?session=${SESSION_ID}`);
-    if (!resp.ok) throw new Error('Load failed');
-    const data = await resp.json();
-    history = data.history || [];
-    babyName = data.babyName || '';
-    return true;
-  } catch (err) {
-    console.warn('Cloud load failed, using local:', err);
-    // Fallback to localStorage
-    history = JSON.parse(localStorage.getItem('feedHistory') || '[]');
-    babyName = localStorage.getItem('babyName') || '';
-    return false;
-  }
-}
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
 
-async function apiSave(entry) {
-  try {
-    const resp = await fetch(`${API_BASE}/api/save`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session: SESSION_ID,
-        babyName: babyName,
-        side: entry.side,
-        timestamp: entry.timestamp,
-        duration: entry.duration
-      })
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function() {
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.remove('show');
     });
-    if (!resp.ok) throw new Error('Save failed');
-    return true;
-  } catch (err) {
-    console.warn('Cloud save failed, saving locally:', err);
-    localStorage.setItem('feedHistory', JSON.stringify(history));
-    return false;
-  }
-}
-
-async function apiDelete(id) {
-  try {
-    const resp = await fetch(`${API_BASE}/api/delete`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session: SESSION_ID, id: id })
-    });
-    if (!resp.ok) throw new Error('Delete failed');
-    return true;
-  } catch (err) {
-    console.warn('Cloud delete failed, saving locally:', err);
-    localStorage.setItem('feedHistory', JSON.stringify(history));
-    return false;
-  }
-}
-
-async function apiSaveBabyName(name) {
-  try {
-    const resp = await fetch(`${API_BASE}/api/save`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session: SESSION_ID, babyName: name })
-    });
-    return resp.ok;
-  } catch (err) {
-    console.warn('Cloud name save failed:', err);
-    return false;
+  } else {
+    showToast('📱 No iPhone: Toque em Compartilhar → Adicionar à Tela Inicial');
   }
 }
 
 // ============================================
-// INIT — Load from cloud
+// INIT
 // ============================================
 async function init() {
-  const ok = await apiLoad();
+  try {
+    db = await openDB();
 
-  // Update UI with loaded data
-  if (babyName) {
-    document.getElementById('babyNameInput').value = babyName;
-    document.getElementById('babyNameDisplay').textContent = '👶 ' + babyName;
-  } else {
-    document.getElementById('babyNameDisplay').textContent = 'Toque para iniciar';
+    // Load baby name from DB
+    const settings = await dbGetAll('settings');
+    const nameSetting = settings.find(function(s) { return s.key === 'babyName'; });
+    if (nameSetting) babyName = nameSetting.value;
+
+    if (babyName) {
+      document.getElementById('babyNameInput').value = babyName;
+      document.getElementById('babyNameDisplay').textContent = '👶 ' + babyName;
+    } else {
+      document.getElementById('babyNameDisplay').textContent = 'Toque para iniciar';
+    }
+
+    // Also try to recover from localStorage (migration)
+    const oldHistory = JSON.parse(localStorage.getItem('feedHistory') || '[]');
+    const oldName = localStorage.getItem('babyName') || '';
+
+    // Migrate old data
+    if (oldHistory.length > 0 && !nameSetting) {
+      for (const item of oldHistory) {
+        await dbPut('feeds', item);
+      }
+      if (oldName) {
+        babyName = oldName;
+        await dbPut('settings', { key: 'babyName', value: oldName });
+        document.getElementById('babyNameInput').value = oldName;
+        document.getElementById('babyNameDisplay').textContent = '👶 ' + oldName;
+      }
+    }
+
+    // Load history from DB
+    history = await dbGetAll('feeds');
+    history.sort(function(a, b) { return b.timestamp - a.timestamp; });
+
+    renderHistory();
+    updateStats();
+  } catch (err) {
+    console.error('IndexedDB error, falling back to localStorage:', err);
+    // Ultimate fallback
+    history = JSON.parse(localStorage.getItem('feedHistory') || '[]');
+    babyName = localStorage.getItem('babyName') || '';
+    if (babyName) {
+      document.getElementById('babyNameInput').value = babyName;
+      document.getElementById('babyNameDisplay').textContent = '👶 ' + babyName;
+    } else {
+      document.getElementById('babyNameDisplay').textContent = 'Toque para iniciar';
+    }
+    renderHistory();
+    updateStats();
   }
 
-  renderHistory();
-  updateStats();
-
-  // Hide loading overlay
+  // Hide loading
   document.getElementById('loadingOverlay').style.display = 'none';
 }
 
@@ -256,14 +304,16 @@ async function init() {
 let nameSaveTimer = null;
 document.getElementById('babyNameInput').addEventListener('input', function(e) {
   babyName = e.target.value;
-  localStorage.setItem('babyName', babyName);
   document.getElementById('babyNameDisplay').textContent = babyName ? '👶 ' + babyName : 'Toque para iniciar';
 
-  // Debounce cloud save
+  // Debounce save
   clearTimeout(nameSaveTimer);
-  nameSaveTimer = setTimeout(function() {
-    apiSaveBabyName(babyName);
-  }, 800);
+  nameSaveTimer = setTimeout(async function() {
+    localStorage.setItem('babyName', babyName); // backup
+    if (db) {
+      try { await dbPut('settings', { key: 'babyName', value: babyName }); } catch(e) {}
+    }
+  }, 500);
 });
 
 // ============================================
@@ -318,7 +368,7 @@ function updateTimer() {
   document.getElementById('btnText').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function stopFeed() {
+async function stopFeed() {
   isFeeding = false;
   clearInterval(feedTimer);
 
@@ -326,7 +376,7 @@ function stopFeed() {
   let mins = Math.floor(duration / 60);
   let secs = duration % 60;
 
-  // Save to history
+  // Save entry
   let entry = {
     id: feedStart,
     timestamp: feedStart,
@@ -336,8 +386,11 @@ function stopFeed() {
   };
   history.unshift(entry);
 
-  // Save to cloud + local
-  apiSave(entry);
+  // Save to IndexedDB
+  if (db) {
+    try { await dbPut('feeds', entry); } catch(e) { console.error(e); }
+  }
+  // Backup to localStorage
   localStorage.setItem('feedHistory', JSON.stringify(history));
 
   // Reset UI
@@ -404,9 +457,9 @@ function renderHistory() {
 // ============================================
 // DELETE ENTRY
 // ============================================
-function deleteEntry(id) {
+async function deleteEntry(id) {
   history = history.filter(function(item) { return item.id !== id; });
-  apiDelete(id);
+  if (db) { try { await dbDelete('feeds', id); } catch(e) {} }
   localStorage.setItem('feedHistory', JSON.stringify(history));
   renderHistory();
   updateStats();
@@ -419,19 +472,9 @@ function deleteEntry(id) {
 async function clearHistory() {
   if (history.length === 0) return;
   if (confirm('Tem certeza que deseja apagar todo o histórico?')) {
-    // Delete all from cloud one by one (or just overwrite locally)
     history = [];
+    if (db) { try { await dbClear('feeds'); } catch(e) {} }
     localStorage.setItem('feedHistory', JSON.stringify(history));
-
-    // Clear on cloud too — save empty
-    try {
-      await fetch(`${API_BASE}/api/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session: SESSION_ID, clearAll: true })
-      });
-    } catch(e) {}
-
     renderHistory();
     updateStats();
     showToast('Histórico limpo');
@@ -475,8 +518,27 @@ function showToast(msg) {
   let toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 2000);
+  setTimeout(function() { toast.classList.remove('show'); }, 2500);
 }
+
+// ============================================
+// SERVICE WORKER
+// ============================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(e) {
+      console.log('SW registration failed:', e);
+    });
+  });
+}
+
+// Prevent accidental close during feeding
+window.addEventListener('beforeunload', function(e) {
+  if (isFeeding) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 
 // ============================================
 // START
