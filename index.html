@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍼 Mamada Tracker</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; color: #333; }
+
+/* Header */
+.header { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 16px; text-align: center; color: white; position: sticky; top: 0; z-index: 100; }
+.header h1 { font-size: 1.4rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.header .baby-name { font-weight: 300; opacity: 0.9; }
+
+/* Loading overlay */
+.loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white; }
+.loading-overlay .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Main button area */
+.start-section { padding: 20px; text-align: center; }
+.big-btn { width: 200px; height: 200px; border-radius: 50%; border: none; font-size: 1.3rem; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin: 20px auto; }
+.big-btn.start { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.big-btn.active { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); animation: pulse 2s infinite; }
+.big-btn:active { transform: scale(0.95); }
+.big-btn .icon { font-size: 3rem; }
+.big-btn .timer { font-size: 2rem; font-variant-numeric: tabular-nums; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+/* Side selector */
+.side-selector { display: flex; gap: 12px; justify-content: center; margin: 16px 0; }
+.side-btn { padding: 12px 28px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); }
+.side-btn.active { background: white; color: #f5576c; border-color: white; }
+.side-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Stats cards */
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 16px; }
+.stat-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px 8px; text-align: center; color: white; }
+.stat-card .stat-value { font-size: 1.5rem; font-weight: 700; }
+.stat-card .stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; }
+
+/* History */
+.history-section { padding: 16px; padding-bottom: 40px; }
+.history-title { color: white; font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.clear-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
+.history-list { max-height: 400px; overflow-y: auto; }
+.history-item { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.history-item .info { display: flex; align-items: center; gap: 12px; }
+.history-item .side-icon { font-size: 1.8rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f0f0f0; }
+.history-item .details .time { font-weight: 700; font-size: 1rem; color: #333; }
+.history-item .details .meta { font-size: 0.8rem; color: #888; }
+.history-item .duration { font-weight: 700; color: #764ba2; font-size: 1.1rem; }
+.delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; padding: 4px 8px; }
+.empty-state { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.7); }
+.empty-state .emoji { font-size: 3rem; margin-bottom: 8px; }
+
+/* Settings */
+.settings-row { display: flex; gap: 10px; padding: 0 16px 16px; justify-content: center; }
+.name-input { flex: 1; max-width: 200px; padding: 10px 16px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1rem; text-align: center; backdrop-filter: blur(5px); }
+.name-input::placeholder { color: rgba(255,255,255,0.6); }
+.name-input:focus { outline: none; border-color: white; background: rgba(255,255,255,0.25); }
+
+/* Toast */
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; transition: transform 0.3s ease; z-index: 200; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Cloud badge */
+.cloud-badge { position: fixed; bottom: 10px; right: 10px; font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div>Carregando dados...</div>
+</div>
+
+<div class="header">
+  <h1>🍼 Mamada Tracker</h1>
+  <div class="baby-name" id="babyNameDisplay">Carregando...</div>
+</div>
+
+<!-- Baby name input -->
+<div class="settings-row">
+  <input type="text" class="name-input" id="babyNameInput" placeholder="Nome do bebê" maxlength="20">
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-value" id="todayCount">0</div>
+    <div class="stat-label">Mamadas hoje</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="todayTotal">0min</div>
+    <div class="stat-label">Tempo total</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="lastFeed">--</div>
+    <div class="stat-label">Última mamada</div>
+  </div>
+</div>
+
+<!-- Timer section -->
+<div class="start-section">
+  <div class="side-selector">
+    <button class="side-btn active" id="leftSide" onclick="selectSide('left')">👈 Esquerdo</button>
+    <button class="side-btn" id="rightSide" onclick="selectSide('right')">Direito 👉</button>
+  </div>
+  <button class="big-btn start" id="mainBtn" onclick="toggleFeed()">
+    <span class="icon" id="btnIcon">🍼</span>
+    <span id="btnText">Iniciar</span>
+  </button>
+</div>
+
+<!-- History -->
+<div class="history-section">
+  <div class="history-title">
+    <span>📋 Histórico</span>
+    <button class="clear-btn" onclick="clearHistory()">🗑️ Limpar</button>
+  </div>
+  <div class="history-list" id="historyList">
+    <div class="empty-state">
+      <div class="emoji">👶</div>
+      <div>Nenhuma mamada registrada ainda</div>
+    </div>
+  </div>
+</div>
+
+<div class="cloud-badge">☁️ Sincronizado</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// SESSION ID — unique per device, persisted
+// ============================================
+function getSessionId() {
+  let sid = localStorage.getItem('mt_session_id');
+  if (!sid) {
+    sid = 'mt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('mt_session_id', sid);
+  }
+  return sid;
+}
+const SESSION_ID = getSessionId();
+const API_BASE = ''; // same domain
+
+// ============================================
+// STATE
+// ============================================
+let isFeeding = false;
+let feedStart = null;
+let feedTimer = null;
+let currentSide = 'left';
+let history = [];
+let babyName = '';
+
+// ============================================
+// API FUNCTIONS — cloud database
+// ============================================
+async function apiLoad() {
+  try {
+    const resp = await fetch(`${API_BASE}/api/load?session=${SESSION_ID}`);
+    if (!resp.ok) throw new Error('Load failed');
+    const data = await resp.json();
+    history = data.history || [];
+    babyName = data.babyName || '';
+    return true;
+  } catch (err) {
+    console.warn('Cloud load failed, using local:', err);
+    // Fallback to localStorage
+    history = JSON.parse(localStorage.getItem('feedHistory') || '[]');
+    babyName = localStorage.getItem('babyName') || '';
+    return false;
+  }
+}
+
+async function apiSave(entry) {
+  try {
+    const resp = await fetch(`${API_BASE}/api/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session: SESSION_ID,
+        babyName: babyName,
+        side: entry.side,
+        timestamp: entry.timestamp,
+        duration: entry.duration
+      })
+    });
+    if (!resp.ok) throw new Error('Save failed');
+    return true;
+  } catch (err) {
+    console.warn('Cloud save failed, saving locally:', err);
+    localStorage.setItem('feedHistory', JSON.stringify(history));
+    return false;
+  }
+}
+
+async function apiDelete(id) {
+  try {
+    const resp = await fetch(`${API_BASE}/api/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session: SESSION_ID, id: id })
+    });
+    if (!resp.ok) throw new Error('Delete failed');
+    return true;
+  } catch (err) {
+    console.warn('Cloud delete failed, saving locally:', err);
+    localStorage.setItem('feedHistory', JSON.stringify(history));
+    return false;
+  }
+}
+
+async function apiSaveBabyName(name) {
+  try {
+    const resp = await fetch(`${API_BASE}/api/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session: SESSION_ID, babyName: name })
+    });
+    return resp.ok;
+  } catch (err) {
+    console.warn('Cloud name save failed:', err);
+    return false;
+  }
+}
+
+// ============================================
+// INIT — Load from cloud
+// ============================================
+async function init() {
+  const ok = await apiLoad();
+
+  // Update UI with loaded data
+  if (babyName) {
+    document.getElementById('babyNameInput').value = babyName;
+    document.getElementById('babyNameDisplay').textContent = '👶 ' + babyName;
+  } else {
+    document.getElementById('babyNameDisplay').textContent = 'Toque para iniciar';
+  }
+
+  renderHistory();
+  updateStats();
+
+  // Hide loading overlay
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// ============================================
+// BABY NAME
+// ============================================
+let nameSaveTimer = null;
+document.getElementById('babyNameInput').addEventListener('input', function(e) {
+  babyName = e.target.value;
+  localStorage.setItem('babyName', babyName);
+  document.getElementById('babyNameDisplay').textContent = babyName ? '👶 ' + babyName : 'Toque para iniciar';
+
+  // Debounce cloud save
+  clearTimeout(nameSaveTimer);
+  nameSaveTimer = setTimeout(function() {
+    apiSaveBabyName(babyName);
+  }, 800);
+});
+
+// ============================================
+// SIDE SELECTION
+// ============================================
+function selectSide(side) {
+  if (isFeeding) return;
+  currentSide = side;
+  document.getElementById('leftSide').classList.toggle('active', side === 'left');
+  document.getElementById('rightSide').classList.toggle('active', side === 'right');
+}
+
+// ============================================
+// TOGGLE FEED
+// ============================================
+function toggleFeed() {
+  if (!isFeeding) {
+    startFeed();
+  } else {
+    stopFeed();
+  }
+}
+
+function startFeed() {
+  isFeeding = true;
+  feedStart = Date.now();
+
+  // Auto-switch side from last feed
+  if (history.length > 0) {
+    let lastSide = history[0].side;
+    currentSide = lastSide === 'left' ? 'right' : 'left';
+    selectSide(currentSide);
+  }
+
+  document.getElementById('leftSide').disabled = true;
+  document.getElementById('rightSide').disabled = true;
+
+  let btn = document.getElementById('mainBtn');
+  btn.classList.remove('start');
+  btn.classList.add('active');
+  document.getElementById('btnIcon').textContent = '⏱️';
+  document.getElementById('btnText').textContent = '0:00';
+
+  feedTimer = setInterval(updateTimer, 1000);
+  showToast('Mamada iniciada! 💪');
+}
+
+function updateTimer() {
+  let elapsed = Math.floor((Date.now() - feedStart) / 1000);
+  let mins = Math.floor(elapsed / 60);
+  let secs = elapsed % 60;
+  document.getElementById('btnText').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function stopFeed() {
+  isFeeding = false;
+  clearInterval(feedTimer);
+
+  let duration = Math.floor((Date.now() - feedStart) / 1000);
+  let mins = Math.floor(duration / 60);
+  let secs = duration % 60;
+
+  // Save to history
+  let entry = {
+    id: feedStart,
+    timestamp: feedStart,
+    duration: duration,
+    side: currentSide,
+    date: new Date(feedStart).toISOString().split('T')[0]
+  };
+  history.unshift(entry);
+
+  // Save to cloud + local
+  apiSave(entry);
+  localStorage.setItem('feedHistory', JSON.stringify(history));
+
+  // Reset UI
+  let btn = document.getElementById('mainBtn');
+  btn.classList.remove('active');
+  btn.classList.add('start');
+  document.getElementById('btnIcon').textContent = '🍼';
+  document.getElementById('btnText').textContent = 'Iniciar';
+  document.getElementById('leftSide').disabled = false;
+  document.getElementById('rightSide').disabled = false;
+
+  // Auto-switch side for next feed
+  let nextSide = currentSide === 'left' ? 'right' : 'left';
+  selectSide(nextSide);
+
+  renderHistory();
+  updateStats();
+  showToast(`Mamada finalizada! ${mins}min ${secs}s ✅`);
+}
+
+// ============================================
+// RENDER HISTORY
+// ============================================
+function renderHistory() {
+  let list = document.getElementById('historyList');
+  if (history.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="emoji">👶</div><div>Nenhuma mamada registrada ainda</div></div>';
+    return;
+  }
+
+  let today = new Date().toISOString().split('T')[0];
+  let html = '';
+
+  history.forEach(function(item) {
+    let date = new Date(item.timestamp);
+    let timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    let dateStr = item.date === today ? 'Hoje' : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    let mins = Math.floor(item.duration / 60);
+    let secs = item.duration % 60;
+    let durationStr = mins > 0 ? `${mins}min` : `${secs}s`;
+    let sideIcon = item.side === 'left' ? '👈' : '👉';
+    let sideLabel = item.side === 'left' ? 'Esquerdo' : 'Direito';
+
+    html += `
+      <div class="history-item">
+        <div class="info">
+          <div class="side-icon">${sideIcon}</div>
+          <div class="details">
+            <div class="time">${timeStr} · ${dateStr}</div>
+            <div class="meta">Seio ${sideLabel}</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="duration">${durationStr}</span>
+          <button class="delete-btn" onclick="deleteEntry(${item.id})">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+}
+
+// ============================================
+// DELETE ENTRY
+// ============================================
+function deleteEntry(id) {
+  history = history.filter(function(item) { return item.id !== id; });
+  apiDelete(id);
+  localStorage.setItem('feedHistory', JSON.stringify(history));
+  renderHistory();
+  updateStats();
+  showToast('Registro removido');
+}
+
+// ============================================
+// CLEAR HISTORY
+// ============================================
+async function clearHistory() {
+  if (history.length === 0) return;
+  if (confirm('Tem certeza que deseja apagar todo o histórico?')) {
+    // Delete all from cloud one by one (or just overwrite locally)
+    history = [];
+    localStorage.setItem('feedHistory', JSON.stringify(history));
+
+    // Clear on cloud too — save empty
+    try {
+      await fetch(`${API_BASE}/api/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session: SESSION_ID, clearAll: true })
+      });
+    } catch(e) {}
+
+    renderHistory();
+    updateStats();
+    showToast('Histórico limpo');
+  }
+}
+
+// ============================================
+// UPDATE STATS
+// ============================================
+function updateStats() {
+  let today = new Date().toISOString().split('T')[0];
+  let todayFeeds = history.filter(function(item) { return item.date === today; });
+
+  document.getElementById('todayCount').textContent = todayFeeds.length;
+
+  let totalSecs = todayFeeds.reduce(function(sum, item) { return sum + item.duration; }, 0);
+  let totalMins = Math.floor(totalSecs / 60);
+  document.getElementById('todayTotal').textContent = totalMins + 'min';
+
+  if (history.length > 0) {
+    let last = history[0];
+    let lastDate = new Date(last.timestamp);
+    let now = new Date();
+    let diffMs = now - lastDate;
+    let diffHrs = Math.floor(diffMs / 3600000);
+    let diffMins = Math.floor((diffMs % 3600000) / 60000);
+    if (diffHrs > 0) {
+      document.getElementById('lastFeed').textContent = diffHrs + 'h' + diffMins + 'min';
+    } else {
+      document.getElementById('lastFeed').textContent = diffMins + 'min';
+    }
+  } else {
+    document.getElementById('lastFeed').textContent = '--';
+  }
+}
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2000);
+}
+
+// ============================================
+// START
+// ============================================
+init();
+</script>
+
+</body>
+</html>
