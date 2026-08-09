@@ -1,5 +1,5 @@
-// Service Worker — permite o app funcionar offline e ser instalável
-const CACHE_NAME = 'mamada-tracker-v2';
+// Service Worker — Mamada Tracker v3
+const CACHE_NAME = 'bebe-tracker-v3';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', function(e) {
@@ -29,9 +29,7 @@ self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
   e.respondWith(
     caches.match(e.request).then(function(cached) {
-      return cached || fetch(e.request).then(function(resp) {
-        return resp;
-      }).catch(function() {
+      return cached || fetch(e.request).catch(function() {
         return caches.match('./index.html');
       });
     })

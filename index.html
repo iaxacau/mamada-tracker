@@ -5,74 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Mamada">
-<meta name="theme-color" content="#f5576c">
+<meta name="apple-mobile-web-app-title" content="Bebê">
+<meta name="theme-color" content="#4facfe">
 <link rel="manifest" href="manifest.json">
-<title>🍼 Mamada Tracker</title>
+<title>🍼 Tracker do Bebê</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; color: #333; overflow-x: hidden; }
+body { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); min-height: 100vh; color: #333; overflow-x: hidden; }
 
 /* Header */
-.header { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 16px; text-align: center; color: white; position: sticky; top: 0; z-index: 100; }
-.header h1 { font-size: 1.4rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.header .baby-name { font-weight: 300; opacity: 0.9; margin-top: 2px; }
+.header { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 14px 16px 10px; text-align: center; color: white; position: sticky; top: 0; z-index: 100; }
+.header h1 { font-size: 1.3rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.header .baby-name { font-weight: 300; opacity: 0.9; font-size: 0.9rem; margin-top: 2px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; padding: 0 16px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.tab { flex: 1; padding: 12px; text-align: center; color: white; font-weight: 600; font-size: 1rem; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.tab.active { border-bottom-color: white; background: rgba(255,255,255,0.1); }
 
 /* Loading overlay */
-.loading-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white; }
+.loading-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white; }
 .loading-overlay .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Install prompt */
-.install-banner { display: none; background: rgba(255,255,255,0.25); color: white; padding: 10px 16px; text-align: center; font-size: 0.85rem; cursor: pointer; }
-.install-banner.show { display: block; }
-
 /* Main button area */
-.start-section { padding: 10px 20px 20px; text-align: center; }
-.big-btn { width: 200px; height: 200px; border-radius: 50%; border: none; font-size: 1.3rem; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin: 10px auto; }
-.big-btn.start { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.big-btn.active { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); animation: pulse 2s infinite; }
+.start-section { padding: 10px 20px 16px; text-align: center; }
+.big-btn { width: 190px; height: 190px; border-radius: 50%; border: none; font-size: 1.2rem; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; margin: 8px auto; }
+.big-btn.start-feed { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.big-btn.start-sleep { background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); }
+.big-btn.active-feed { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); animation: pulse 2s infinite; }
+.big-btn.active-sleep { background: linear-gradient(135deg, #30336b 0%, #4834d4 100%); animation: pulse 3s infinite; }
 .big-btn:active { transform: scale(0.95); }
-.big-btn .icon { font-size: 3rem; }
-.big-btn .timer { font-size: 2rem; font-variant-numeric: tabular-nums; }
+.big-btn .icon { font-size: 2.8rem; }
+.big-btn .timer { font-size: 1.8rem; font-variant-numeric: tabular-nums; }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
 /* Side selector */
-.side-selector { display: flex; gap: 12px; justify-content: center; margin: 12px 0; }
-.side-btn { padding: 12px 28px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
-.side-btn.active { background: white; color: #f5576c; border-color: white; }
+.side-selector { display: flex; gap: 12px; justify-content: center; margin: 8px 0; }
+.side-btn { padding: 10px 26px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.side-btn.active { background: white; color: #4facfe; border-color: white; }
 .side-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Stats cards */
-.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 16px; }
-.stat-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 16px 8px; text-align: center; color: white; }
-.stat-card .stat-value { font-size: 1.5rem; font-weight: 700; }
-.stat-card .stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 12px 16px; }
+.stat-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 14px; padding: 14px 6px; text-align: center; color: white; }
+.stat-card .stat-value { font-size: 1.4rem; font-weight: 700; }
+.stat-card .stat-label { font-size: 0.7rem; opacity: 0.8; margin-top: 3px; }
 
 /* History */
-.history-section { padding: 16px; padding-bottom: 60px; }
-.history-title { color: white; font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
-.clear-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
-.history-list { max-height: 500px; overflow-y: auto; }
-.history-item { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.history-item .info { display: flex; align-items: center; gap: 12px; }
-.history-item .side-icon { font-size: 1.8rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f0f0f0; }
-.history-item .details .time { font-weight: 700; font-size: 1rem; color: #333; }
-.history-item .details .meta { font-size: 0.8rem; color: #888; }
-.history-item .duration { font-weight: 700; color: #764ba2; font-size: 1.1rem; }
-.delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; padding: 4px 8px; }
-.empty-state { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.7); }
-.empty-state .emoji { font-size: 3rem; margin-bottom: 8px; }
+.history-section { padding: 12px 16px 60px; }
+.history-title { color: white; font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+.clear-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; cursor: pointer; }
+.history-list { max-height: 450px; overflow-y: auto; }
+.history-item { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 14px; margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.history-item .info { display: flex; align-items: center; gap: 10px; }
+.history-item .side-icon { font-size: 1.6rem; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #e8f4fd; flex-shrink: 0; }
+.history-item .details .time { font-weight: 700; font-size: 0.95rem; color: #333; }
+.history-item .details .meta { font-size: 0.75rem; color: #888; }
+.history-item .duration { font-weight: 700; font-size: 1.05rem; }
+.duration.feed { color: #764ba2; }
+.duration.sleep { color: #2193b0; }
+.history-actions { display: flex; align-items: center; gap: 8px; }
+.action-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px 6px; border-radius: 8px; }
+.action-btn.edit { color: #4facfe; }
+.action-btn.delete { color: #e74c3c; }
+.empty-state { text-align: center; padding: 30px 20px; color: rgba(255,255,255,0.7); }
+.empty-state .emoji { font-size: 2.5rem; margin-bottom: 6px; }
 
 /* Settings */
-.settings-row { display: flex; gap: 10px; padding: 0 16px 16px; justify-content: center; }
-.name-input { flex: 1; max-width: 200px; padding: 10px 16px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1rem; text-align: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.settings-row { display: flex; gap: 10px; padding: 0 16px 12px; justify-content: center; }
+.name-input { flex: 1; max-width: 200px; padding: 9px 16px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); color: white; font-size: 1rem; text-align: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
 .name-input::placeholder { color: rgba(255,255,255,0.6); }
 .name-input:focus { outline: none; border-color: white; background: rgba(255,255,255,0.25); }
 
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 20px; padding: 24px 20px; width: 100%; max-width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.modal h3 { text-align: center; margin-bottom: 20px; color: #333; font-size: 1.2rem; }
+.modal label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 4px; margin-top: 12px; font-weight: 600; }
+.modal input, .modal select { width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; color: #333; transition: border 0.2s; }
+.modal input:focus, .modal select:focus { outline: none; border-color: #4facfe; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+.modal-btn.save { background: #4facfe; color: white; }
+.modal-btn.cancel { background: #f0f0f0; color: #666; }
+
 /* Toast */
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; transition: transform 0.3s ease; z-index: 200; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; transition: transform 0.3s ease; z-index: 400; }
 .toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Page visibility */
+.page { display: none; }
+.page.active { display: block; }
 </style>
 </head>
 <body>
@@ -84,16 +109,20 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
 </div>
 
 <div class="header">
-  <h1>🍼 Mamada Tracker</h1>
+  <h1>🍼 Tracker do Bebê</h1>
   <div class="baby-name" id="babyNameDisplay">Carregando...</div>
 </div>
 
-<!-- Install prompt -->
-<div class="install-banner" id="installBanner" onclick="installApp()">
-  📲 Toque aqui para instalar o app no celular
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" id="tabFeed" onclick="switchTab('feed')">🍼 Mamadas</div>
+  <div class="tab" id="tabSleep" onclick="switchTab('sleep')">😴 Sonecas</div>
 </div>
 
-<!-- Baby name input -->
+<!-- ====================== FEED PAGE ====================== -->
+<div class="page active" id="feedPage">
+
+<!-- Baby name -->
 <div class="settings-row">
   <input type="text" class="name-input" id="babyNameInput" placeholder="Nome do bebê" maxlength="20">
 </div>
@@ -101,41 +130,93 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
 <!-- Stats -->
 <div class="stats">
   <div class="stat-card">
-    <div class="stat-value" id="todayCount">0</div>
+    <div class="stat-value" id="feedCount">0</div>
     <div class="stat-label">Mamadas hoje</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value" id="todayTotal">0min</div>
+    <div class="stat-value" id="feedTotal">0min</div>
     <div class="stat-label">Tempo total</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value" id="lastFeed">--</div>
+    <div class="stat-value" id="feedLast">--</div>
     <div class="stat-label">Última mamada</div>
   </div>
 </div>
 
-<!-- Timer section -->
+<!-- Timer -->
 <div class="start-section">
   <div class="side-selector">
     <button class="side-btn active" id="leftSide" onclick="selectSide('left')">👈 Esquerdo</button>
     <button class="side-btn" id="rightSide" onclick="selectSide('right')">Direito 👉</button>
   </div>
-  <button class="big-btn start" id="mainBtn" onclick="toggleFeed()">
-    <span class="icon" id="btnIcon">🍼</span>
-    <span id="btnText">Iniciar</span>
+  <button class="big-btn start-feed" id="feedBtn" onclick="toggleFeed()">
+    <span class="icon" id="feedBtnIcon">🍼</span>
+    <span id="feedBtnText">Iniciar</span>
   </button>
 </div>
 
 <!-- History -->
 <div class="history-section">
   <div class="history-title">
-    <span>📋 Histórico</span>
-    <button class="clear-btn" onclick="clearHistory()">🗑️ Limpar</button>
+    <span>📋 Histórico de Mamadas</span>
+    <button class="clear-btn" onclick="clearHistory('feed')">🗑️ Limpar</button>
   </div>
-  <div class="history-list" id="historyList">
-    <div class="empty-state">
-      <div class="emoji">👶</div>
-      <div>Nenhuma mamada registrada ainda</div>
+  <div class="history-list" id="feedHistory"></div>
+</div>
+</div>
+
+<!-- ====================== SLEEP PAGE ====================== -->
+<div class="page" id="sleepPage">
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-value" id="sleepCount">0</div>
+    <div class="stat-label">Sonecas hoje</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="sleepTotal">0h</div>
+    <div class="stat-label">Tempo total</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="sleepLast">--</div>
+    <div class="stat-label">Última soneca</div>
+  </div>
+</div>
+
+<!-- Timer -->
+<div class="start-section">
+  <button class="big-btn start-sleep" id="sleepBtn" onclick="toggleSleep()">
+    <span class="icon" id="sleepBtnIcon">😴</span>
+    <span id="sleepBtnText">Iniciar</span>
+  </button>
+</div>
+
+<!-- History -->
+<div class="history-section">
+  <div class="history-title">
+    <span>📋 Histórico de Sonecas</span>
+    <button class="clear-btn" onclick="clearHistory('sleep')">🗑️ Limpar</button>
+  </div>
+  <div class="history-list" id="sleepHistory"></div>
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3 id="editTitle">✏️ Editar Registro</h3>
+    <label>Hora de início</label>
+    <input type="datetime-local" id="editTime">
+    <label id="editSideLabel">Seio</label>
+    <select id="editSide" style="display:none;">
+      <option value="left">👈 Esquerdo</option>
+      <option value="right">👉 Direito</option>
+    </select>
+    <label>Duração (minutos)</label>
+    <input type="number" id="editDuration" min="0" step="1">
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-btn save" onclick="saveEdit()">Salvar</button>
     </div>
   </div>
 </div>
@@ -144,12 +225,69 @@ body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height
 
 <script>
 // ============================================
-// INDEXEDDB — Banco de dados local persistente
-// Diferente do localStorage, IndexedDB NÃO é limpo
-// em navegadores in-app (WhatsApp, Instagram, etc)
+// FUSO HORÁRIO DE BRASÍLIA (America/Sao_Paulo)
 // ============================================
-const DB_NAME = 'MamadaTrackerDB';
-const DB_VERSION = 1;
+const BRT_TZ = 'America/Sao_Paulo';
+
+function nowBRT() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: BRT_TZ }));
+}
+
+function toBRTDate(ts) {
+  return new Date(new Date(ts).toLocaleString('en-US', { timeZone: BRT_TZ }));
+}
+
+function getBRTDateStr(ts) {
+  const d = toBRTDate(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function getBRTToday() {
+  return getBRTDateStr(Date.now());
+}
+
+function formatBRTTime(ts) {
+  return toBRTDate(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatBRTDateLabel(dateStr) {
+  const today = getBRTToday();
+  if (dateStr === today) return 'Hoje';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+// Convert timestamp to datetime-local input value (BRT)
+function tsToInputValue(ts) {
+  const d = toBRTDate(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const h = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${y}-${m}-${day}T${h}:${min}`;
+}
+
+// Convert datetime-local input value back to timestamp
+function inputValueToTs(val) {
+  // Input value is in BRT, convert to UTC timestamp
+  // Parse as if it were UTC, then add the offset
+  const date = new Date(val + ':00Z');
+  // Get BRT offset (UTC-3, or UTC-2 during DST, but let's handle dynamically)
+  const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const brtDate = new Date(date.toLocaleString('en-US', { timeZone: BRT_TZ }));
+  const offset = utcDate - brtDate;
+  return date.getTime() + offset;
+}
+
+// ============================================
+// INDEXEDDB
+// ============================================
+const DB_NAME = 'BebeTrackerDB';
+const DB_VERSION = 2;
 let db = null;
 
 function openDB() {
@@ -161,6 +299,9 @@ function openDB() {
       const database = e.target.result;
       if (!database.objectStoreNames.contains('feeds')) {
         database.createObjectStore('feeds', { keyPath: 'id' });
+      }
+      if (!database.objectStoreNames.contains('sleeps')) {
+        database.createObjectStore('sleeps', { keyPath: 'id' });
       }
       if (!database.objectStoreNames.contains('settings')) {
         database.createObjectStore('settings', { keyPath: 'key' });
@@ -208,33 +349,24 @@ function dbClear(store) {
 // ============================================
 // STATE
 // ============================================
-let isFeeding = false;
-let feedStart = null;
-let feedTimer = null;
+let activeTab = 'feed';
+let isFeeding = false, isSleeping = false;
+let feedStart = null, sleepStart = null;
+let feedTimer = null, sleepTimer = null;
 let currentSide = 'left';
-let history = [];
+let feedHistory = [], sleepHistory = [];
 let babyName = '';
-let deferredPrompt = null;
+let editingId = null, editingType = null;
 
 // ============================================
-// PWA INSTALL PROMPT
+// TAB SWITCH
 // ============================================
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('installBanner').classList.add('show');
-});
-
-function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function() {
-      deferredPrompt = null;
-      document.getElementById('installBanner').classList.remove('show');
-    });
-  } else {
-    showToast('📱 No iPhone: Toque em Compartilhar → Adicionar à Tela Inicial');
-  }
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tabFeed').classList.toggle('active', tab === 'feed');
+  document.getElementById('tabSleep').classList.toggle('active', tab === 'sleep');
+  document.getElementById('feedPage').classList.toggle('active', tab === 'feed');
+  document.getElementById('sleepPage').classList.toggle('active', tab === 'sleep');
 }
 
 // ============================================
@@ -244,11 +376,28 @@ async function init() {
   try {
     db = await openDB();
 
-    // Load baby name from DB
     const settings = await dbGetAll('settings');
     const nameSetting = settings.find(function(s) { return s.key === 'babyName'; });
     if (nameSetting) babyName = nameSetting.value;
 
+    // Migrate old data
+    const oldHistory = JSON.parse(localStorage.getItem('feedHistory') || '[]');
+    const oldName = localStorage.getItem('babyName') || '';
+    if (oldHistory.length > 0) {
+      for (const item of oldHistory) {
+        if (!item.date || item.date.length < 10) {
+          item.date = getBRTDateStr(item.timestamp);
+        }
+        try { await dbPut('feeds', item); } catch(e) {}
+      }
+      localStorage.removeItem('feedHistory');
+    }
+    if (oldName && !nameSetting) {
+      babyName = oldName;
+      await dbPut('settings', { key: 'babyName', value: oldName });
+      localStorage.removeItem('babyName');
+    }
+
     if (babyName) {
       document.getElementById('babyNameInput').value = babyName;
       document.getElementById('babyNameDisplay').textContent = '👶 ' + babyName;
@@ -256,45 +405,31 @@ async function init() {
       document.getElementById('babyNameDisplay').textContent = 'Toque para iniciar';
     }
 
-    // Also try to recover from localStorage (migration)
-    const oldHistory = JSON.parse(localStorage.getItem('feedHistory') || '[]');
-    const oldName = localStorage.getItem('babyName') || '';
+    feedHistory = await dbGetAll('feeds');
+    feedHistory.sort(function(a, b) { return b.timestamp - a.timestamp; });
 
-    // Migrate old data
-    if (oldHistory.length > 0 && !nameSetting) {
-      for (const item of oldHistory) {
-        await dbPut('feeds', item);
-      }
-      if (oldName) {
-        babyName = oldName;
-        await dbPut('settings', { key: 'babyName', value: oldName });
-        document.getElementById('babyNameInput').value = oldName;
-        document.getElementById('babyNameDisplay').textContent = '👶 ' + oldName;
-      }
-    }
+    sleepHistory = await dbGetAll('sleeps');
+    sleepHistory.sort(function(a, b) { return b.timestamp - a.timestamp; });
 
-    // Load history from DB
-    history = await dbGetAll('feeds');
-    history.sort(function(a, b) { return b.timestamp - a.timestamp; });
-
-    renderHistory();
-    updateStats();
+    renderFeedHistory();
+    renderSleepHistory();
+    updateFeedStats();
+    updateSleepStats();
   } catch (err) {
-    console.error('IndexedDB error, falling back to localStorage:', err);
-    // Ultimate fallback
-    history = JSON.parse(localStorage.getItem('feedHistory') || '[]');
+    console.error('DB error:', err);
+    feedHistory = JSON.parse(localStorage.getItem('feedHistory') || '[]');
+    sleepHistory = JSON.parse(localStorage.getItem('sleepHistory') || '[]');
     babyName = localStorage.getItem('babyName') || '';
     if (babyName) {
       document.getElementById('babyNameInput').value = babyName;
       document.getElementById('babyNameDisplay').textContent = '👶 ' + babyName;
-    } else {
-      document.getElementById('babyNameDisplay').textContent = 'Toque para iniciar';
     }
-    renderHistory();
-    updateStats();
+    renderFeedHistory();
+    renderSleepHistory();
+    updateFeedStats();
+    updateSleepStats();
   }
 
-  // Hide loading
   document.getElementById('loadingOverlay').style.display = 'none';
 }
 
@@ -305,14 +440,10 @@ let nameSaveTimer = null;
 document.getElementById('babyNameInput').addEventListener('input', function(e) {
   babyName = e.target.value;
   document.getElementById('babyNameDisplay').textContent = babyName ? '👶 ' + babyName : 'Toque para iniciar';
-
-  // Debounce save
   clearTimeout(nameSaveTimer);
   nameSaveTimer = setTimeout(async function() {
-    localStorage.setItem('babyName', babyName); // backup
-    if (db) {
-      try { await dbPut('settings', { key: 'babyName', value: babyName }); } catch(e) {}
-    }
+    if (db) { try { await dbPut('settings', { key: 'babyName', value: babyName }); } catch(e) {} }
+    localStorage.setItem('babyName', babyName);
   }, 500);
 });
 
@@ -327,187 +458,344 @@ function selectSide(side) {
 }
 
 // ============================================
-// TOGGLE FEED
+// FEED TIMER
 // ============================================
 function toggleFeed() {
-  if (!isFeeding) {
-    startFeed();
-  } else {
-    stopFeed();
-  }
+  if (!isFeeding) startFeed(); else stopFeed();
 }
 
 function startFeed() {
   isFeeding = true;
   feedStart = Date.now();
-
-  // Auto-switch side from last feed
-  if (history.length > 0) {
-    let lastSide = history[0].side;
-    currentSide = lastSide === 'left' ? 'right' : 'left';
+  if (feedHistory.length > 0) {
+    currentSide = feedHistory[0].side === 'left' ? 'right' : 'left';
     selectSide(currentSide);
   }
-
   document.getElementById('leftSide').disabled = true;
   document.getElementById('rightSide').disabled = true;
-
-  let btn = document.getElementById('mainBtn');
-  btn.classList.remove('start');
-  btn.classList.add('active');
-  document.getElementById('btnIcon').textContent = '⏱️';
-  document.getElementById('btnText').textContent = '0:00';
-
-  feedTimer = setInterval(updateTimer, 1000);
+  const btn = document.getElementById('feedBtn');
+  btn.classList.remove('start-feed'); btn.classList.add('active-feed');
+  document.getElementById('feedBtnIcon').textContent = '⏱️';
+  document.getElementById('feedBtnText').textContent = '0:00';
+  feedTimer = setInterval(updateFeedTimer, 1000);
   showToast('Mamada iniciada! 💪');
 }
 
-function updateTimer() {
-  let elapsed = Math.floor((Date.now() - feedStart) / 1000);
-  let mins = Math.floor(elapsed / 60);
-  let secs = elapsed % 60;
-  document.getElementById('btnText').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+function updateFeedTimer() {
+  const elapsed = Math.floor((Date.now() - feedStart) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  document.getElementById('feedBtnText').textContent = `${mins}:${String(secs).padStart(2,'0')}`;
 }
 
 async function stopFeed() {
   isFeeding = false;
   clearInterval(feedTimer);
-
-  let duration = Math.floor((Date.now() - feedStart) / 1000);
-  let mins = Math.floor(duration / 60);
-  let secs = duration % 60;
-
-  // Save entry
-  let entry = {
+  const duration = Math.floor((Date.now() - feedStart) / 1000);
+  const entry = {
     id: feedStart,
     timestamp: feedStart,
     duration: duration,
     side: currentSide,
-    date: new Date(feedStart).toISOString().split('T')[0]
+    date: getBRTDateStr(feedStart)
   };
-  history.unshift(entry);
-
-  // Save to IndexedDB
-  if (db) {
-    try { await dbPut('feeds', entry); } catch(e) { console.error(e); }
-  }
-  // Backup to localStorage
-  localStorage.setItem('feedHistory', JSON.stringify(history));
-
-  // Reset UI
-  let btn = document.getElementById('mainBtn');
-  btn.classList.remove('active');
-  btn.classList.add('start');
-  document.getElementById('btnIcon').textContent = '🍼';
-  document.getElementById('btnText').textContent = 'Iniciar';
-  document.getElementById('leftSide').disabled = false;
-  document.getElementById('rightSide').disabled = false;
-
-  // Auto-switch side for next feed
-  let nextSide = currentSide === 'left' ? 'right' : 'left';
-  selectSide(nextSide);
-
-  renderHistory();
-  updateStats();
+  feedHistory.unshift(entry);
+  if (db) { try { await dbPut('feeds', entry); } catch(e) {} }
+  localStorage.setItem('feedHistory', JSON.stringify(feedHistory));
+  resetFeedUI();
+  renderFeedHistory();
+  updateFeedStats();
+  const mins = Math.floor(duration / 60), secs = duration % 60;
   showToast(`Mamada finalizada! ${mins}min ${secs}s ✅`);
 }
 
+function resetFeedUI() {
+  const btn = document.getElementById('feedBtn');
+  btn.classList.remove('active-feed'); btn.classList.add('start-feed');
+  document.getElementById('feedBtnIcon').textContent = '🍼';
+  document.getElementById('feedBtnText').textContent = 'Iniciar';
+  document.getElementById('leftSide').disabled = false;
+  document.getElementById('rightSide').disabled = false;
+  const nextSide = currentSide === 'left' ? 'right' : 'left';
+  selectSide(nextSide);
+}
+
 // ============================================
-// RENDER HISTORY
+// SLEEP TIMER
 // ============================================
-function renderHistory() {
-  let list = document.getElementById('historyList');
-  if (history.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="emoji">👶</div><div>Nenhuma mamada registrada ainda</div></div>';
+function toggleSleep() {
+  if (!isSleeping) startSleep(); else stopSleep();
+}
+
+function startSleep() {
+  isSleeping = true;
+  sleepStart = Date.now();
+  const btn = document.getElementById('sleepBtn');
+  btn.classList.remove('start-sleep'); btn.classList.add('active-sleep');
+  document.getElementById('sleepBtnIcon').textContent = '🌙';
+  document.getElementById('sleepBtnText').textContent = '0:00';
+  sleepTimer = setInterval(updateSleepTimer, 1000);
+  showToast('Soneca iniciada! 😴');
+}
+
+function updateSleepTimer() {
+  const elapsed = Math.floor((Date.now() - sleepStart) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  document.getElementById('sleepBtnText').textContent = `${mins}:${String(secs).padStart(2,'0')}`;
+}
+
+async function stopSleep() {
+  isSleeping = false;
+  clearInterval(sleepTimer);
+  const duration = Math.floor((Date.now() - sleepStart) / 1000);
+  const entry = {
+    id: sleepStart,
+    timestamp: sleepStart,
+    duration: duration,
+    date: getBRTDateStr(sleepStart)
+  };
+  sleepHistory.unshift(entry);
+  if (db) { try { await dbPut('sleeps', entry); } catch(e) {} }
+  localStorage.setItem('sleepHistory', JSON.stringify(sleepHistory));
+  resetSleepUI();
+  renderSleepHistory();
+  updateSleepStats();
+  const mins = Math.floor(duration / 60), secs = duration % 60;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  const durStr = h > 0 ? `${h}h${m}min` : `${mins}min`;
+  showToast(`Soneca terminada! ${durStr} ✅`);
+}
+
+function resetSleepUI() {
+  const btn = document.getElementById('sleepBtn');
+  btn.classList.remove('active-sleep'); btn.classList.add('start-sleep');
+  document.getElementById('sleepBtnIcon').textContent = '😴';
+  document.getElementById('sleepBtnText').textContent = 'Iniciar';
+}
+
+// ============================================
+// RENDER — FEED HISTORY
+// ============================================
+function renderFeedHistory() {
+  const list = document.getElementById('feedHistory');
+  if (feedHistory.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="emoji">🍼</div><div>Nenhuma mamada registrada</div></div>';
     return;
   }
-
-  let today = new Date().toISOString().split('T')[0];
   let html = '';
-
-  history.forEach(function(item) {
-    let date = new Date(item.timestamp);
-    let timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    let dateStr = item.date === today ? 'Hoje' : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-    let mins = Math.floor(item.duration / 60);
-    let secs = item.duration % 60;
-    let durationStr = mins > 0 ? `${mins}min` : `${secs}s`;
-    let sideIcon = item.side === 'left' ? '👈' : '👉';
-    let sideLabel = item.side === 'left' ? 'Esquerdo' : 'Direito';
-
-    html += `
-      <div class="history-item">
-        <div class="info">
-          <div class="side-icon">${sideIcon}</div>
-          <div class="details">
-            <div class="time">${timeStr} · ${dateStr}</div>
-            <div class="meta">Seio ${sideLabel}</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="duration">${durationStr}</span>
-          <button class="delete-btn" onclick="deleteEntry(${item.id})">✕</button>
+  feedHistory.forEach(function(item) {
+    if (!item.date || item.date.length < 10) item.date = getBRTDateStr(item.timestamp);
+    const timeStr = formatBRTTime(item.timestamp);
+    const dateStr = formatBRTDateLabel(item.date);
+    const mins = Math.floor(item.duration / 60);
+    const secs = item.duration % 60;
+    const durStr = mins > 0 ? `${mins}min` : `${secs}s`;
+    const sideIcon = item.side === 'left' ? '👈' : '👉';
+    const sideLabel = item.side === 'left' ? 'Esquerdo' : 'Direito';
+    html += `<div class="history-item">
+      <div class="info">
+        <div class="side-icon">${sideIcon}</div>
+        <div class="details">
+          <div class="time">${timeStr} · ${dateStr}</div>
+          <div class="meta">Seio ${sideLabel}</div>
         </div>
       </div>
-    `;
+      <div class="history-actions">
+        <span class="duration feed">${durStr}</span>
+        <button class="action-btn edit" onclick="openEditModal(${item.id},'feed')">✏️</button>
+        <button class="action-btn delete" onclick="deleteEntry(${item.id},'feed')">✕</button>
+      </div>
+    </div>`;
   });
-
   list.innerHTML = html;
 }
 
 // ============================================
-// DELETE ENTRY
+// RENDER — SLEEP HISTORY
 // ============================================
-async function deleteEntry(id) {
-  history = history.filter(function(item) { return item.id !== id; });
-  if (db) { try { await dbDelete('feeds', id); } catch(e) {} }
-  localStorage.setItem('feedHistory', JSON.stringify(history));
-  renderHistory();
-  updateStats();
+function renderSleepHistory() {
+  const list = document.getElementById('sleepHistory');
+  if (sleepHistory.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="emoji">😴</div><div>Nenhuma soneca registrada</div></div>';
+    return;
+  }
+  let html = '';
+  sleepHistory.forEach(function(item) {
+    if (!item.date || item.date.length < 10) item.date = getBRTDateStr(item.timestamp);
+    const timeStr = formatBRTTime(item.timestamp);
+    const dateStr = formatBRTDateLabel(item.date);
+    const mins = Math.floor(item.duration / 60);
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    const durStr = h > 0 ? `${h}h${String(m).padStart(2,'0')}min` : `${mins}min`;
+    html += `<div class="history-item">
+      <div class="info">
+        <div class="side-icon">😴</div>
+        <div class="details">
+          <div class="time">${timeStr} · ${dateStr}</div>
+          <div class="meta">Soneca</div>
+        </div>
+      </div>
+      <div class="history-actions">
+        <span class="duration sleep">${durStr}</span>
+        <button class="action-btn edit" onclick="openEditModal(${item.id},'sleep')">✏️</button>
+        <button class="action-btn delete" onclick="deleteEntry(${item.id},'sleep')">✕</button>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+// ============================================
+// EDIT MODAL
+// ============================================
+function openEditModal(id, type) {
+  editingId = id;
+  editingType = type;
+  const history = type === 'feed' ? feedHistory : sleepHistory;
+  const item = history.find(function(i) { return i.id === id; });
+  if (!item) return;
+
+  document.getElementById('editTitle').textContent = type === 'feed' ? '✏️ Editar Mamada' : '✏️ Editar Soneca';
+
+  // Show/hide side selector
+  const sideLabel = document.getElementById('editSideLabel');
+  const sideSelect = document.getElementById('editSide');
+  if (type === 'feed') {
+    sideLabel.style.display = 'block';
+    sideSelect.style.display = 'block';
+    sideSelect.value = item.side || 'left';
+  } else {
+    sideLabel.style.display = 'none';
+    sideSelect.style.display = 'none';
+  }
+
+  // Set time and duration
+  document.getElementById('editTime').value = tsToInputValue(item.timestamp);
+  document.getElementById('editDuration').value = Math.round(item.duration / 60);
+
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('show');
+  editingId = null;
+  editingType = null;
+}
+
+async function saveEdit() {
+  if (editingId === null) return;
+  const newTimeVal = document.getElementById('editTime').value;
+  const newDurationMin = parseInt(document.getElementById('editDuration').value) || 0;
+  const store = editingType === 'feed' ? 'feeds' : 'sleeps';
+  const history = editingType === 'feed' ? feedHistory : sleepHistory;
+  const item = history.find(function(i) { return i.id === editingId; });
+  if (!item) { closeModal(); return; }
+
+  // Update timestamp
+  if (newTimeVal) {
+    const newTs = inputValueToTs(newTimeVal);
+    item.timestamp = newTs;
+    item.id = newTs; // use new timestamp as ID
+    item.date = getBRTDateStr(newTs);
+  }
+  // Update duration (convert minutes to seconds)
+  item.duration = newDurationMin * 60;
+  // Update side if feed
+  if (editingType === 'feed') {
+    const newSide = document.getElementById('editSide').value;
+    // Delete old entry (old key) and add new one
+    if (item.id !== editingId) {
+      if (db) { try { await dbDelete(store, editingId); } catch(e) {} }
+    }
+    item.side = newSide;
+  } else {
+    if (item.id !== editingId) {
+      if (db) { try { await dbDelete(store, editingId); } catch(e) {} }
+    }
+  }
+
+  // Re-sort history
+  history.sort(function(a, b) { return b.timestamp - a.timestamp; });
+
+  if (db) { try { await dbPut(store, item); } catch(e) {} }
+  localStorage.setItem(editingType === 'feed' ? 'feedHistory' : 'sleepHistory', JSON.stringify(history));
+
+  if (editingType === 'feed') { renderFeedHistory(); updateFeedStats(); }
+  else { renderSleepHistory(); updateSleepStats(); }
+
+  closeModal();
+  showToast('Registro editado! ✅');
+}
+
+// ============================================
+// DELETE
+// ============================================
+async function deleteEntry(id, type) {
+  const store = type === 'feed' ? 'feeds' : 'sleeps';
+  const arr = type === 'feed' ? feedHistory : sleepHistory;
+  const filtered = arr.filter(function(item) { return item.id !== id; });
+  if (type === 'feed') feedHistory = filtered; else sleepHistory = filtered;
+  if (db) { try { await dbDelete(store, id); } catch(e) {} }
+  localStorage.setItem(type === 'feed' ? 'feedHistory' : 'sleepHistory', JSON.stringify(filtered));
+  if (type === 'feed') { renderFeedHistory(); updateFeedStats(); }
+  else { renderSleepHistory(); updateSleepStats(); }
   showToast('Registro removido');
 }
 
 // ============================================
 // CLEAR HISTORY
 // ============================================
-async function clearHistory() {
-  if (history.length === 0) return;
-  if (confirm('Tem certeza que deseja apagar todo o histórico?')) {
-    history = [];
-    if (db) { try { await dbClear('feeds'); } catch(e) {} }
-    localStorage.setItem('feedHistory', JSON.stringify(history));
-    renderHistory();
-    updateStats();
-    showToast('Histórico limpo');
-  }
+async function clearHistory(type) {
+  const arr = type === 'feed' ? feedHistory : sleepHistory;
+  if (arr.length === 0) return;
+  const label = type === 'feed' ? 'mamadas' : 'sonecas';
+  if (!confirm('Apagar todo o histórico de ' + label + '?')) return;
+  if (type === 'feed') feedHistory = []; else sleepHistory = [];
+  const store = type === 'feed' ? 'feeds' : 'sleeps';
+  if (db) { try { await dbClear(store); } catch(e) {} }
+  localStorage.removeItem(type === 'feed' ? 'feedHistory' : 'sleepHistory');
+  if (type === 'feed') { renderFeedHistory(); updateFeedStats(); }
+  else { renderSleepHistory(); updateSleepStats(); }
+  showToast('Histórico limpo');
 }
 
 // ============================================
-// UPDATE STATS
+// STATS
 // ============================================
-function updateStats() {
-  let today = new Date().toISOString().split('T')[0];
-  let todayFeeds = history.filter(function(item) { return item.date === today; });
-
-  document.getElementById('todayCount').textContent = todayFeeds.length;
-
-  let totalSecs = todayFeeds.reduce(function(sum, item) { return sum + item.duration; }, 0);
-  let totalMins = Math.floor(totalSecs / 60);
-  document.getElementById('todayTotal').textContent = totalMins + 'min';
-
-  if (history.length > 0) {
-    let last = history[0];
-    let lastDate = new Date(last.timestamp);
-    let now = new Date();
-    let diffMs = now - lastDate;
-    let diffHrs = Math.floor(diffMs / 3600000);
-    let diffMins = Math.floor((diffMs % 3600000) / 60000);
-    if (diffHrs > 0) {
-      document.getElementById('lastFeed').textContent = diffHrs + 'h' + diffMins + 'min';
-    } else {
-      document.getElementById('lastFeed').textContent = diffMins + 'min';
-    }
+function updateFeedStats() {
+  const today = getBRTToday();
+  const todayFeeds = feedHistory.filter(function(i) { return i.date === today; });
+  document.getElementById('feedCount').textContent = todayFeeds.length;
+  const totalSecs = todayFeeds.reduce(function(s, i) { return s + i.duration; }, 0);
+  document.getElementById('feedTotal').textContent = Math.floor(totalSecs / 60) + 'min';
+  if (feedHistory.length > 0) {
+    const last = feedHistory[0];
+    const diff = nowBRT() - toBRTDate(last.timestamp);
+    const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('feedLast').textContent = h > 0 ? h + 'h' + m + 'min' : m + 'min';
   } else {
-    document.getElementById('lastFeed').textContent = '--';
+    document.getElementById('feedLast').textContent = '--';
+  }
+}
+
+function updateSleepStats() {
+  const today = getBRTToday();
+  const todaySleeps = sleepHistory.filter(function(i) { return i.date === today; });
+  document.getElementById('sleepCount').textContent = todaySleeps.length;
+  const totalSecs = todaySleeps.reduce(function(s, i) { return s + i.duration; }, 0);
+  const totalMins = Math.floor(totalSecs / 60);
+  const h = Math.floor(totalMins / 60), m = totalMins % 60;
+  document.getElementById('sleepTotal').textContent = h > 0 ? h + 'h' + m + 'min' : totalMins + 'min';
+  if (sleepHistory.length > 0) {
+    const last = sleepHistory[0];
+    const diff = nowBRT() - toBRTDate(last.timestamp);
+    const hh = Math.floor(diff / 3600000), mm = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('sleepLast').textContent = hh > 0 ? hh + 'h' + mm + 'min' : mm + 'min';
+  } else {
+    document.getElementById('sleepLast').textContent = '--';
   }
 }
 
@@ -515,30 +803,29 @@ function updateStats() {
 // TOAST
 // ============================================
 function showToast(msg) {
-  let toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 2500);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
 
 // ============================================
-// SERVICE WORKER
+// SERVICE WORKER + PREVENT CLOSE
 // ============================================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').catch(function(e) {
-      console.log('SW registration failed:', e);
-    });
+    navigator.serviceWorker.register('sw.js').catch(function(e) { console.log('SW err:', e); });
   });
 }
 
-// Prevent accidental close during feeding
 window.addEventListener('beforeunload', function(e) {
-  if (isFeeding) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
+  if (isFeeding || isSleeping) { e.preventDefault(); e.returnValue = ''; }
 });
+
+// Update "last" stats every minute
+setInterval(function() {
+  if (activeTab === 'feed') updateFeedStats(); else updateSleepStats();
+}, 60000);
 
 // ============================================
 // START
